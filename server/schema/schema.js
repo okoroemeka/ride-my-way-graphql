@@ -1,70 +1,29 @@
-import Sequelize from 'sequelize';
-import _ from 'lodash';
-import Faker from 'faker';
+import { gql } from 'apollo-server-express';
 
-const connection = new Sequelize (
-  'ride-my-way',
-  'postgres',
-  '',
-  {
-    dialect: 'postgres',
-    host: 'localhost'
+const typeDefs = gql`
+  type user {
+    id: Int
+    firstname: String!
+    lastname: String!
+    email: String!
+    password: String!
+    confirmPassword: String!
+    phone: Int!
   }
-);
-
-const User = connection.define('user',{
-  firstName:{
-    type: Sequelize.STRING,
-    allowNull: false,
-  },
-  lastName: {
-    type: Sequelize.STRING,
-    allowNull: false,
-  },
-  userType:{
-    type: Sequelize.INTEGER,
-    allowNull: false,
-  },
-  email: {
-    type: Sequelize.STRING,
-    allowNull: false,
-    validate:{
-      isEmail: true,
-    }
+  type Query {
+    getUser(id: Int!): user
   }
-});
- const Ride = ('ride',{
-   carType: {
-     type: Sequelize.STRING,
-     allowNull: false,
-   },
-   location: {
-     type: Sequelize.STRING,
-     allowNull: false,
-   },
-   destination: {
-     type: Sequelize.STRING,
-     allowNull: false,
-   },
- });
+  type Mutation {
+    createUser(
+      firstname: String!
+      lastname: String!
+      email: String!
+      password: String!
+      phone: Int!
+      confirmPassword: String!
+    ): user
+    # signIn()
+  }
+`;
 
-
-// Ride.hasMany(User);
-// User.hasOne(Ride);
-
-  connection.sync({force: true})
-  .then(()=>{
-    _times(3, ()=> {
-     return User.create({
-      firstName: Faker.name.firstName(),
-      lastName: Faker.name.lastName(),
-      email: Faker.internet.email(),
-      userType : 1,
-      })
-    })
-  })
-  .catch ((error)=>{
-    console.log('error occured')
-  })
-  
-export default connection;
+export default typeDefs;
