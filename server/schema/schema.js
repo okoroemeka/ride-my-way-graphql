@@ -22,7 +22,7 @@ const typeDefs = gql`
       phone: Int!
       confirmPassword: String!
     ): user
-    # signIn()
+    signIn(email: String!, password: String!): user
   }
 `;
 
