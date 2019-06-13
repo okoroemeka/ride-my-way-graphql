@@ -10,10 +10,20 @@ const typeDefs = gql`
     confirmPassword: String!
     phone: Int!
   }
+  type ride {
+    id: Int
+    currentLocation: String!
+    destination: String!
+    capacity: Int!
+    carColor: String!
+    carType: String!
+    plateNumber: String!
+  }
   type Query {
     getUser(id: Int!): user
   }
   type Mutation {
+    # user signup
     createUser(
       firstname: String!
       lastname: String!
@@ -22,7 +32,17 @@ const typeDefs = gql`
       phone: Int!
       confirmPassword: String!
     ): user
+    # user signin
     signIn(email: String!, password: String!): user
+    #  Create ride
+    createRide(
+      currentLocation: String!
+      destination: String!
+      capacity: Int!
+      carColor: String!
+      carType: String!
+      plateNumber: Int!
+    ): ride
   }
 `;
 

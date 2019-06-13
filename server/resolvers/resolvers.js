@@ -1,5 +1,6 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import checkFieldsfrom from '../utils/checkFields';
 
 const resolvers = {
   Query: {
@@ -8,6 +9,12 @@ const resolvers = {
     }
   },
   Mutation: {
+    /**
+     * @returns {object} user
+     * @param {object} root
+     * @param {object} param1
+     * @param {object} context
+     */
     async createUser(
       root,
       { firstname, lastname, email, phone, password, confirmPassword },
@@ -45,21 +52,15 @@ const resolvers = {
       });
       return user;
     },
+
+    /**
+     * @returns {object} user
+     * @param {object} root
+     * @param {object} param1
+     * @param {object} context
+     */
     async signIn(root, args, context) {
-      const data = Object.keys(args);
-      let emptyFields = [];
-      data.forEach(element => {
-        if (!args[element].length) {
-          emptyFields.push(element);
-        }
-      });
-      if (emptyFields.length) {
-        throw new Error(
-          `The ${emptyFields.join()} field${
-            emptyFields.length > 1 ? 's' : ''
-          } ${emptyFields.length > 1 ? 'are' : 'is'} empty`
-        );
-      }
+      checkFieldsfrom(args);
       const { email, password } = args;
       const user = await context.models.users.findOne({
         where: {
@@ -86,6 +87,18 @@ const resolvers = {
         maxAge: 1000 * 60 * 60 * 24 * 365
       });
       return dataValues;
+    },
+    async createRide(root, args, context) {
+      checkFieldsfrom(args);
+      const { userId } = context.request;
+      if (!userId) {
+        throw new Error('Please login to continue');
+      }
+      const ride = await context.models.ride.create({
+        ...args,
+        userId
+      });
+      return ride;
     }
   }
 };

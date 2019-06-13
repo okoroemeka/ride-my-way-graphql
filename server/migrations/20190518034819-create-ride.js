@@ -15,8 +15,8 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false
       },
-      carName: {
-        type: Sequelize.STRING,
+      capacity: {
+        type: Sequelize.INTEGER,
         allowNull: false
       },
       carColor: {
@@ -28,7 +28,7 @@ module.exports = {
         allowNull: false
       },
       plateNumber: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.STRING,
         allowNull: false
       },
       createdAt: {
