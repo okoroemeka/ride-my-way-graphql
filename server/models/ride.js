@@ -13,8 +13,8 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false
     },
-    carName: {
-      type: DataTypes.STRING,
+    capacity: {
+      type: DataTypes.INTEGER,
       allowNull: false
     },
     carColor: {
@@ -26,7 +26,7 @@ export default (sequelize, DataTypes) => {
       allowNull: false
     },
     plateNumber: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING,
       allowNull: false
     }
   });
