@@ -7,15 +7,11 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      location: {
+      pickup_location: {
         type: Sequelize.STRING,
         allowNull: false
       },
-      destinstion: {
-        type: Sequelize.STRING,
-        allowNull: false
-      },
-      firstname: {
+      pickup_time: {
         type: Sequelize.STRING,
         allowNull: false
       },

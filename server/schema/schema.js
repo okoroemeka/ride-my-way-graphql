@@ -14,13 +14,16 @@ const typeDefs = gql`
     id: Int
     currentLocation: String!
     destination: String!
+    departure: String!
     capacity: Int!
     carColor: String!
     carType: String!
     plateNumber: String!
+    userId: Int
   }
   type Query {
     getUser(id: Int!): user
+    allRides: [ride]!
   }
   type Mutation {
     # user signup
@@ -41,7 +44,8 @@ const typeDefs = gql`
       capacity: Int!
       carColor: String!
       carType: String!
-      plateNumber: Int!
+      departure: String!
+      plateNumber: String!
     ): ride
   }
 `;

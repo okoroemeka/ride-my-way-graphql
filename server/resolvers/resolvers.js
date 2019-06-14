@@ -6,6 +6,32 @@ const resolvers = {
   Query: {
     async getUser(parent, { id }, context) {
       return context.models.users.findById(id);
+    },
+    /**
+     *
+     * @param {object} parent
+     * @param {object} args
+     * @param {object} context
+     * @param {object} info
+     * @returns {array} allRides
+     */
+    async allRides(parent, args, context, info) {
+      const { models } = context;
+      const allRides = await models.ride.findAll({
+        where: {},
+        attributes: [
+          'id',
+          'currentLocation',
+          'destination',
+          'departure',
+          'capacity',
+          'carColor',
+          'carType',
+          'plateNumber',
+          'userId'
+        ]
+      });
+      return allRides;
     }
   },
   Mutation: {
@@ -20,7 +46,8 @@ const resolvers = {
       { firstname, lastname, email, phone, password, confirmPassword },
       context
     ) {
-      const checkUser = await context.models.users.findOne({
+      const { models } = context;
+      const checkUser = await models.users.findOne({
         where: {
           email
         }
@@ -33,7 +60,7 @@ const resolvers = {
       }
       // Hash password
       const hashPassword = await bcrypt.hash(password, 10);
-      const user = await context.models.users.create({
+      const user = await models.users.create({
         firstname,
         lastname,
         email,
@@ -62,7 +89,8 @@ const resolvers = {
     async signIn(root, args, context) {
       checkFieldsfrom(args);
       const { email, password } = args;
-      const user = await context.models.users.findOne({
+      const { models } = context;
+      const user = await models.users.findOne({
         where: {
           email
         }
@@ -73,7 +101,6 @@ const resolvers = {
       const { dataValues } = user;
       const valid = await bcrypt.compare(password, dataValues.password);
       if (!valid) {
-        console.log(valid);
         throw new Error('Wrong email or password');
       }
 
@@ -94,7 +121,8 @@ const resolvers = {
       if (!userId) {
         throw new Error('Please login to continue');
       }
-      const ride = await context.models.ride.create({
+      const { models } = context;
+      const ride = await models.ride.create({
         ...args,
         userId
       });
