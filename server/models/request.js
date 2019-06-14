@@ -2,15 +2,11 @@ export default (sequelize, DataTypes) => {
   const request = sequelize.define(
     'request',
     {
-      location: {
+      pickup_location: {
         type: DataTypes.STRING,
         allowNull: false
       },
-      destinstion: {
-        type: DataTypes.STRING,
-        allowNull: false
-      },
-      firstname: {
+      pickup_time: {
         type: DataTypes.STRING,
         allowNull: false
       }

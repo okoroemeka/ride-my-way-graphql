@@ -13,6 +13,10 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false
     },
+    departure: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
     capacity: {
       type: DataTypes.INTEGER,
       allowNull: false
@@ -34,10 +38,6 @@ export default (sequelize, DataTypes) => {
     // associations can be defined here
     ride.belongsTo(models.users, {
       foreignKey: 'userId'
-    });
-    ride.hasMany(models.request, {
-      foreignKey: 'rideId',
-      as: 'requests'
     });
   };
   return ride;
