@@ -22,7 +22,7 @@ const typeDefs = gql`
     userId: Int
   }
   type Query {
-    getUser(id: Int!): user
+    getSpecificRide(id: Int!): ride
     allRides: [ride]!
   }
   type Mutation {
