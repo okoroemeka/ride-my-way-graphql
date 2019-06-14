@@ -4,9 +4,6 @@ import checkFieldsfrom from '../utils/checkFields';
 
 const resolvers = {
   Query: {
-    async getUser(parent, { id }, context) {
-      return context.models.users.findById(id);
-    },
     /**
      *
      * @param {object} parent
@@ -32,6 +29,32 @@ const resolvers = {
         ]
       });
       return allRides;
+    },
+    async getSpecificRide(parent, args, context) {
+      const {
+        models,
+        request: { userId }
+      } = context;
+      const { id } = args;
+      if (!userId) throw new Error('Please login to continue');
+
+      const ride = await models.ride.findOne({
+        where: { id },
+        attributes: [
+          'id',
+          'currentLocation',
+          'destination',
+          'departure',
+          'capacity',
+          'carColor',
+          'carType',
+          'plateNumber',
+          'userId'
+        ]
+      });
+      if (!ride) throw new Error('This ride has been removed');
+
+      return ride;
     }
   },
   Mutation: {
@@ -52,12 +75,12 @@ const resolvers = {
           email
         }
       });
-      if (checkUser) {
+      if (checkUser)
         throw new Error('User already exist, please signin to continue.');
-      }
-      if (password !== confirmPassword) {
+
+      if (password !== confirmPassword)
         throw new Error('Password do match, check them to confirm');
-      }
+
       // Hash password
       const hashPassword = await bcrypt.hash(password, 10);
       const user = await models.users.create({
@@ -95,14 +118,11 @@ const resolvers = {
           email
         }
       });
-      if (!user) {
-        throw new Error('The user does not exist, please signup');
-      }
+      if (!user) throw new Error('The user does not exist, please signup');
+
       const { dataValues } = user;
       const valid = await bcrypt.compare(password, dataValues.password);
-      if (!valid) {
-        throw new Error('Wrong email or password');
-      }
+      if (!valid) throw new Error('Wrong email or password');
 
       const token = jwt.sign(
         { userId: dataValues.id, email: dataValues.email },
@@ -118,9 +138,8 @@ const resolvers = {
     async createRide(root, args, context) {
       checkFieldsfrom(args);
       const { userId } = context.request;
-      if (!userId) {
-        throw new Error('Please login to continue');
-      }
+      if (!userId) throw new Error('Please login to continue');
+
       const { models } = context;
       const ride = await models.ride.create({
         ...args,
