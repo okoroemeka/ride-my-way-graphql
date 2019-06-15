@@ -22,7 +22,8 @@ module.exports = {
           model: 'users',
           key: 'id',
           as: 'userId'
-        }
+        },
+        allowNull: false
       },
       rideId: {
         type: Sequelize.INTEGER,
@@ -31,7 +32,8 @@ module.exports = {
           model: 'rides',
           key: 'id',
           as: 'rideId'
-        }
+        },
+        allowNull: false
       },
       createdAt: {
         allowNull: false,

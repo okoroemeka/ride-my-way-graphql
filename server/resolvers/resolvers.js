@@ -1,6 +1,7 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import checkFieldsfrom from '../utils/checkFields';
+import userAuth from '../utils/userAuth';
 
 const resolvers = {
   Query: {
@@ -67,7 +68,8 @@ const resolvers = {
     async createUser(
       root,
       { firstname, lastname, email, phone, password, confirmPassword },
-      context
+      context,
+      info
     ) {
       const { models } = context;
       const checkUser = await models.users.findOne({
@@ -109,7 +111,7 @@ const resolvers = {
      * @param {object} param1
      * @param {object} context
      */
-    async signIn(root, args, context) {
+    async signIn(root, args, context, info) {
       checkFieldsfrom(args);
       const { email, password } = args;
       const { models } = context;
@@ -135,7 +137,15 @@ const resolvers = {
       });
       return dataValues;
     },
-    async createRide(root, args, context) {
+    /**
+     *
+     * @param {object} root
+     * @param {object} args
+     * @param {object} context
+     * @param {object} info
+     * @returns {object} ride
+     */
+    async createRide(root, args, context, info) {
       checkFieldsfrom(args);
       const { userId } = context.request;
       if (!userId) throw new Error('Please login to continue');
@@ -146,6 +156,41 @@ const resolvers = {
         userId
       });
       return ride;
+    },
+    /**
+     *
+     * @param {object} root
+     * @param {object} args
+     * @param {object} context
+     * @param {object} info
+     * @returns {object} rideRequest
+     */
+    async rideRequest(root, args, context, info) {
+      userAuth(context);
+      checkFieldsfrom(args);
+      const { userId } = context.request;
+      const { models } = context;
+      const { rideId } = args;
+
+      const ride = await models.ride.findByPk(rideId, {
+        attributes: [
+          'id',
+          'currentLocation',
+          'destination',
+          'departure',
+          'capacity',
+          'carColor',
+          'carType',
+          'plateNumber',
+          'userId'
+        ]
+      });
+      if (!ride) throw new Error('This ride offer no longer exists');
+      const rideRequest = await models.request.create({
+        ...args,
+        userId
+      });
+      return rideRequest;
     }
   }
 };
