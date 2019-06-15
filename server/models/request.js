@@ -18,14 +18,17 @@ export default (sequelize, DataTypes) => {
     request.belongsTo(models.ride, {
       foreignKey: 'rideId',
       as: 'rideRequests',
-      onDelete: 'CASCADE'
+      onDelete: 'CASCADE',
+      allowNull: false
     });
   };
   request.associate = models => {
     // associations can be defined here
     request.belongsTo(models.users, {
       foreignKey: 'userId',
-      onDelete: 'CASCADE'
+      as: 'passengers',
+      onDelete: 'CASCADE',
+      allowNull: false
     });
   };
   return request;

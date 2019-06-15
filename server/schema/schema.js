@@ -21,6 +21,12 @@ const typeDefs = gql`
     plateNumber: String!
     userId: Int
   }
+  type request {
+    pickup_location: String!
+    pickup_time: String!
+    userId: Int!
+    rideId: Int!
+  }
   type Query {
     getSpecificRide(id: Int!): ride
     allRides: [ride]!
@@ -47,6 +53,12 @@ const typeDefs = gql`
       departure: String!
       plateNumber: String!
     ): ride
+    # ~Ride request
+    rideRequest(
+      pickup_location: String!
+      pickup_time: String!
+      rideId: Int!
+    ): request
   }
 `;
 

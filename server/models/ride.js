@@ -39,6 +39,10 @@ export default (sequelize, DataTypes) => {
     ride.belongsTo(models.users, {
       foreignKey: 'userId'
     });
+    ride.hasMany(models.request, {
+      foriegnKey: 'requestId',
+      as: 'requests'
+    });
   };
   return ride;
 };
