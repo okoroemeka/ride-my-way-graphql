@@ -24,6 +24,7 @@ const typeDefs = gql`
   type request {
     pickup_location: String!
     pickup_time: String!
+    approved: Boolean!
     userId: Int!
     rideId: Int!
   }
@@ -58,6 +59,12 @@ const typeDefs = gql`
       pickup_location: String!
       pickup_time: String!
       rideId: Int!
+    ): request
+    # Respond to a ride request
+    respondToRideRequest(
+      rideId: Int!
+      requestId: Int!
+      approved: Boolean!
     ): request
   }
 `;

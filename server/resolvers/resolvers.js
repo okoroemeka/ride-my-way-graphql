@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import checkFieldsfrom from '../utils/checkFields';
 import userAuth from '../utils/userAuth';
+import { findRideRequestById, findRideById } from '../utils/queryHelper';
 
 const resolvers = {
   Query: {
@@ -172,7 +173,7 @@ const resolvers = {
       const { models } = context;
       const { rideId } = args;
 
-      const ride = await models.ride.findByPk(rideId, {
+      const ride = await findRideById(models, rideId, {
         attributes: [
           'id',
           'currentLocation',
@@ -191,6 +192,54 @@ const resolvers = {
         userId
       });
       return rideRequest;
+    },
+    /**
+     *
+     * @param {object} root
+     * @param {object} args
+     * @param {object} context
+     * @param {object} info
+     * @returns {object} request
+     */
+    async respondToRideRequest(root, args, context, info) {
+      userAuth(context);
+      const { models } = context;
+      const { rideId, requestId, approved } = args;
+      const ride = await findRideById(models, rideId, {
+        attributes: [
+          'id',
+          'currentLocation',
+          'destination',
+          'departure',
+          'capacity',
+          'carColor',
+          'carType',
+          'plateNumber',
+          'userId'
+        ]
+      });
+      if (!ride) throw new Error('This ride offer no longer exists');
+      if (ride.dataValues.capacity < 1)
+        throw new Error('This ride is full already');
+      const { approved: checkStatus } = findRideRequestById(models, requestId);
+      if (checkStatus !== approved) {
+        await models.request.update(
+          { approved },
+          { where: { id: requestId, rideId } }
+        );
+        if (approved === true) {
+          await models.ride.update(
+            { capacity: ride.dataValues.capacity - 1 },
+            {
+              where: {
+                id: rideId
+              }
+            }
+          );
+        }
+      }
+      const updatedRequest = await findRideRequestById(models, requestId);
+      return updatedRequest;
     }
   }
 };

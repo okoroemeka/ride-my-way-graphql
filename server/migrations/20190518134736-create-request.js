@@ -15,6 +15,10 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false
       },
+      approved: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
+      },
       userId: {
         type: Sequelize.INTEGER,
         onDelete: 'CASCADE',

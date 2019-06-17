@@ -9,6 +9,10 @@ export default (sequelize, DataTypes) => {
       pickup_time: {
         type: DataTypes.STRING,
         allowNull: false
+      },
+      approved: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
       }
     },
     {}
