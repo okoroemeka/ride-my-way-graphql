@@ -6,4 +6,17 @@ const findRideById = async (models, queryParam, options = {}) => {
   const response = await models.ride.findByPk(queryParam, options);
   return response;
 };
-export { findRideRequestById, findRideById };
+const rideTableOptions = {
+  attributes: [
+    'id',
+    'currentLocation',
+    'destination',
+    'departure',
+    'capacity',
+    'carColor',
+    'carType',
+    'plateNumber',
+    'userId'
+  ]
+};
+export { findRideRequestById, findRideById, rideTableOptions };

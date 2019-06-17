@@ -2,12 +2,16 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import checkFieldsfrom from '../utils/checkFields';
 import userAuth from '../utils/userAuth';
-import { findRideRequestById, findRideById } from '../utils/queryHelper';
+import {
+  findRideRequestById,
+  findRideById,
+  rideTableOptions
+} from '../utils/queryHelper';
 
 const resolvers = {
   Query: {
     /**
-     *
+     * @ Gets all ride offer
      * @param {object} parent
      * @param {object} args
      * @param {object} context
@@ -32,7 +36,15 @@ const resolvers = {
       });
       return allRides;
     },
-    async getSpecificRide(parent, args, context) {
+    /**
+     * @ Gets a specific ride offer
+     * @param {object} parent
+     * @param {object} args
+     * @param {object} context
+     * @param {object} info
+     * @returns {object} ride
+     */
+    async getSpecificRide(parent, args, context, info) {
       const {
         models,
         request: { userId }
@@ -61,6 +73,7 @@ const resolvers = {
   },
   Mutation: {
     /**
+     * @ Creates a user
      * @returns {object} user
      * @param {object} root
      * @param {object} param1
@@ -107,6 +120,7 @@ const resolvers = {
     },
 
     /**
+     * @ Log in User
      * @returns {object} user
      * @param {object} root
      * @param {object} param1
@@ -139,7 +153,7 @@ const resolvers = {
       return dataValues;
     },
     /**
-     *
+     * @ Create a ride Offer
      * @param {object} root
      * @param {object} args
      * @param {object} context
@@ -159,7 +173,7 @@ const resolvers = {
       return ride;
     },
     /**
-     *
+     * @ Make a ride request
      * @param {object} root
      * @param {object} args
      * @param {object} context
@@ -173,19 +187,7 @@ const resolvers = {
       const { models } = context;
       const { rideId } = args;
 
-      const ride = await findRideById(models, rideId, {
-        attributes: [
-          'id',
-          'currentLocation',
-          'destination',
-          'departure',
-          'capacity',
-          'carColor',
-          'carType',
-          'plateNumber',
-          'userId'
-        ]
-      });
+      const ride = await findRideById(models, rideId, rideTableOptions);
       if (!ride) throw new Error('This ride offer no longer exists');
       const rideRequest = await models.request.create({
         ...args,
@@ -194,7 +196,7 @@ const resolvers = {
       return rideRequest;
     },
     /**
-     *
+     * @ Respond to ride request
      * @param {object} root
      * @param {object} args
      * @param {object} context
@@ -205,19 +207,7 @@ const resolvers = {
       userAuth(context);
       const { models } = context;
       const { rideId, requestId, approved } = args;
-      const ride = await findRideById(models, rideId, {
-        attributes: [
-          'id',
-          'currentLocation',
-          'destination',
-          'departure',
-          'capacity',
-          'carColor',
-          'carType',
-          'plateNumber',
-          'userId'
-        ]
-      });
+      const ride = await findRideById(models, rideId, rideTableOptions);
       if (!ride) throw new Error('This ride offer no longer exists');
       if (ride.dataValues.capacity < 1)
         throw new Error('This ride is full already');
@@ -240,6 +230,38 @@ const resolvers = {
       }
       const updatedRequest = await findRideRequestById(models, requestId);
       return updatedRequest;
+    },
+    /**
+     * @ Delete ride offer
+     * @param {object} root
+     * @param {object} args
+     * @param {object} context
+     * @param {object} info
+     * @return {object} message
+     */
+    async deleteRideOffer(root, args, context, info) {
+      const {
+        models,
+        request: { userId }
+      } = context;
+      const { rideId } = args;
+      const checkRideOffer = await findRideById(
+        models,
+        rideId,
+        rideTableOptions
+      );
+      if (!checkRideOffer) throw new Error('The ride offer does not exist');
+      const {
+        dataValues: { userId: dbUserId }
+      } = checkRideOffer;
+      if (dbUserId !== userId)
+        throw new Error("You don't have permission to delete this ride offer");
+      await models.ride.destroy({
+        where: {
+          id: rideId
+        }
+      });
+      return { text: 'Ride offer deleted successfully' };
     }
   }
 };

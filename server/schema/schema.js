@@ -1,6 +1,9 @@
 import { gql } from 'apollo-server-express';
 
 const typeDefs = gql`
+  type message {
+    text: String!
+  }
   type user {
     id: Int
     firstname: String!
@@ -66,6 +69,8 @@ const typeDefs = gql`
       requestId: Int!
       approved: Boolean!
     ): request
+    # Delete ride offer
+    deleteRideOffer(rideId: Int!): message
   }
 `;
 
